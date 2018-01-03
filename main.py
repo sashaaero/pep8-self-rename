@@ -52,7 +52,7 @@ def run(file):
                     i += 1
                     continue
 
-                # we dont care about other decorators
+                # we don`t care about other decorators
 
                 if line.startswith('def'):
                     if decorator == staticmethod:
@@ -81,14 +81,12 @@ def run(file):
                     continue
 
                 else:
-                    """pat = arg_pat(curr_method['$first_arg'])
-                    print(pat)
+                    pat = arg_pat(curr_method['$first_arg'])
                     res = re.match(pat, line)
                     if res is None:
                         print(line)
-                    print(res)
                     i += 1
-                    continue"""
+                    continue
 
         if not curr_class:
             # check for class
@@ -101,6 +99,10 @@ def run(file):
                 i += 1
                 continue
         i += 1
+
+    with open('%s_out.py' % file.name[:2], 'w') as f:
+        for line in out_lines:
+            f.write(line)
 
 
 if __name__ == '__main__':
