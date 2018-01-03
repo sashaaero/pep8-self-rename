@@ -41,6 +41,19 @@ def run(file):
                 continue
 
             if not curr_method:
+
+                if line.startswith('@classmethod'):
+                    decorator = classmethod
+                    i += 1
+                    continue
+
+                if line.startswith('@staticmethod'):
+                    decorator = staticmethod
+                    i += 1
+                    continue
+
+                # we dont care about other decorators
+
                 if line.startswith('def'):
                     if decorator == staticmethod:
                         decorator = None
