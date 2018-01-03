@@ -6,7 +6,7 @@ import sys
 
 def run(file):
     lines = list(file.readlines())
-    out_lines = []
+    out = open('%s_out.py' % file.name[:-3], 'w')
 
     classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)[\(:]'
     method_pat = r'def ([a-zA-Z0-9_][a-zA-Z0-9_]*)\(([a-zA-Z0-9_][a-zA-Z0-9_]*)[\),]'
@@ -20,7 +20,7 @@ def run(file):
 
     while i < len(lines):
         line_ = lines[i]
-        out_lines.append(line_)
+        out.write(line_)
 
         if len(line_.strip()) == 0:
             i += 1
@@ -100,9 +100,7 @@ def run(file):
                 continue
         i += 1
 
-    with open('%s_out.py' % file.name[:2], 'w') as f:
-        for line in out_lines:
-            f.write(line)
+    out.close()
 
 
 if __name__ == '__main__':
