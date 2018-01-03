@@ -59,12 +59,11 @@ def run(file):
                         decorator = None
                         i += 1
                         continue
-                    try:
-                        method_name, first_arg = re.search(method_pat, line).groups()
-                    except:
-                        if curr_class:
-                            print('we are in class')
-                        # print(line)
+
+                    match = re.search(method_pat, line)
+                    if not match:
+                        raise SyntaxError('Line %d of %s seems incorrect' % (i+1, file.name))
+                    method_name, first_arg = match.groups()
 
                     curr_method = {'$method_name': method_name, '$indent': indent}
 

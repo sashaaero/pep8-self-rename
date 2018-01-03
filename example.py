@@ -6,6 +6,9 @@ class SomeClass:
         supra.arg3 = arg3
         supra.info = 'some line that contains supra'
 
+    @staticmethod
+    def hmm():
+        pass
 
     @classmethod
     def method(hola, arg1, arg2):  # case of self.self
