@@ -4,13 +4,46 @@ import re
 import glob
 import sys
 
+classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)[\(:]'
+method_pat = r'def ([a-zA-Z0-9_][a-zA-Z0-9_]*)\(([a-zA-Z0-9_][a-zA-Z0-9_]*)[\),]'
+arg_pat = lambda x: r'(?<!\.)\b(%s)(\.)?' % x
+
+def exctract_class(line, indent):
+    match = re.search(classname_pat, line)
+    if not match:
+        raise SyntaxError(line)
+    class_name = match.group(1)
+    return {'$class_name': class_name, '$indent': indent}
+
+
+def run2(file):
+    curr_class, curr_method, curr_decorator = (None,) * 3 # oh my god I am genius
+
+    lines = file.readlines()
+    for line_ in lines:
+        line = line_.lstrip()
+        indent = len(line_) - len(line)
+
+        if not curr_class:
+            if line.startswith('class'):
+                curr_class = exctract_class(line, indent)
+                print(curr_class)
+                continue
+        else:  # curr_class is not None
+            if indent <= curr_class['$indent']:
+                if line.startswith('class'):
+                    curr_class = exctract_class(line, indent)
+                    print(curr_class)
+                    continue
+                else:
+                    curr_class = None
+                    continue
+
 def run(file):
     lines = list(file.readlines())
     out = open('%s_out.py' % file.name[:-3], 'w')
 
-    classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)[\(:]'
-    method_pat = r'def ([a-zA-Z0-9_][a-zA-Z0-9_]*)\(([a-zA-Z0-9_][a-zA-Z0-9_]*)[\),]'
-    arg_pat = lambda x: r'(?<!\.)\b(%s)(\.)?' % x
+
 
     curr_class = {}
     decorator = None
@@ -62,6 +95,8 @@ def run(file):
 
                     match = re.search(method_pat, line)
                     if not match:
+                        print(line)
+                        print(decorator)
                         raise SyntaxError('Line %d of %s seems incorrect' % (i+1, file.name))
                     method_name, first_arg = match.groups()
 
@@ -73,6 +108,9 @@ def run(file):
                     print('In %s.%s rename %s to %s' %
                           (curr_class['$class_name'], curr_method['$method_name'], curr_method['$first_arg'],
                            curr_method['$rename']))
+
+                    i += 1
+                    continue
             else:
                 # assuming that we are in method scope now
                 if indent <= curr_method['$indent']:
@@ -83,8 +121,7 @@ def run(file):
                 else:
                     pat = arg_pat(curr_method['$first_arg'])
                     res = re.match(pat, line)
-                    if res is None:
-                        print(line)
+                    print(res)
                     i += 1
                     continue
 
@@ -95,9 +132,6 @@ def run(file):
                 classname = re.search(classname_pat, line).group(1)
                 curr_class['$class_name'] = classname
                 curr_class['$indent'] = indent
-            else:
-                i += 1
-                continue
         i += 1
 
     out.close()
@@ -115,4 +149,4 @@ if __name__ == '__main__':
         sys.exit(1)
 
     file = open(files[0], 'r')
-    run(file)
+    run2(file)
