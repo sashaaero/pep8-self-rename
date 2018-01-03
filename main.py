@@ -4,8 +4,8 @@ import re
 import glob
 import sys
 
-classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)[\(:]'
-method_pat = r'def ([a-zA-Z0-9_][a-zA-Z0-9_]*)\(([a-zA-Z0-9_][a-zA-Z0-9_]*)[\),]'
+classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)\s*[\(:]'
+method_pat = r'def ([a-zA-Z_][a-zA-Z0-9_-]*)\s*\(([a-zA-Z_][a-zA-Z0-9_-]*)[,|)]'
 arg_pat = lambda x: r'(?<!\.)\b(%s)(\.)?' % x
 
 def extract_class(line, indent):
@@ -18,6 +18,8 @@ def extract_class(line, indent):
 def extract_method(line, indent, classmethod_=None):
     match = re.search(method_pat, line)
     if not match:
+        print(method_pat)
+        print(line)
         raise SyntaxError(line)
     method_name, first_arg = match.groups()
     first_arg = 'self' if not classmethod_ else 'cls'
@@ -196,6 +198,6 @@ if __name__ == '__main__':
     if len(files) != 1:
         print('Multiple or no files were found by "%s"' % filemask)
         sys.exit(1)
-
+    print(files)
     file = open(files[0], 'r')
     run2(file)
