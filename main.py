@@ -8,12 +8,14 @@ classname_pat = r'class ([a-zA-Z_][a-zA-Z0-9_]*)\s*[\(:]'
 method_pat = r'def ([a-zA-Z_][a-zA-Z0-9_-]*)\s*\(([a-zA-Z_][a-zA-Z0-9_-]*)[,|)]'
 arg_pat = lambda x: r'(?<!\.)\b(%s)(\.)?' % x
 
+
 def extract_class(line, indent):
     match = re.search(classname_pat, line)
     if not match:
         raise SyntaxError(line)
     class_name = match.group(1)
     return {'$class_name': class_name, '$indent': indent}
+
 
 def extract_method(line, indent, classmethod_=None):
     match = re.search(method_pat, line)
@@ -24,7 +26,8 @@ def extract_method(line, indent, classmethod_=None):
     method_name, first_arg = match.groups()
     first_arg = 'self' if not classmethod_ else 'cls'
     print("In %s rename first arg to %s" % (method_name, first_arg))
-    return {'$method_name' : method_name, '$first_arg': first_arg, '$indent': indent}
+    return {'$method_name': method_name, '$first_arg': first_arg, '$indent': indent}
+
 
 def run2(file):
     curr_class, curr_method, curr_decorator = (None,) * 3 # oh my god I am genius
@@ -79,113 +82,6 @@ def run2(file):
                         curr_method = None
                 else: # seems we are in a method scope
                     pass # not implemented
-
-
-
-
-
-
-
-
-
-
-
-def run(file):
-    lines = list(file.readlines())
-    out = open('%s_out.py' % file.name[:-3], 'w')
-
-
-
-    curr_class = {}
-    decorator = None
-    curr_method = {}
-
-    i = 0
-
-    while i < len(lines):
-        line_ = lines[i]
-        out.write(line_)
-
-        if len(line_.strip()) == 0:
-            i += 1
-            continue
-
-        line = line_.lstrip()
-
-        if line.startswith('#') or line.startswith('"') or line.startswith("'"):
-            i += 1
-            continue
-
-        indent = len(line_) - len(line)
-
-        if curr_class:
-            if indent <= curr_class['$indent']:
-                curr_class.clear()
-                i += 1
-                continue
-
-            if not curr_method:
-
-                if line.startswith('@classmethod'):
-                    decorator = classmethod
-                    i += 1
-                    continue
-
-                if line.startswith('@staticmethod'):
-                    decorator = staticmethod
-                    i += 1
-                    continue
-
-                # we don`t care about other decorators
-
-                if line.startswith('def'):
-                    if decorator == staticmethod:
-                        decorator = None
-                        i += 1
-                        continue
-
-                    match = re.search(method_pat, line)
-                    if not match:
-                        print(line)
-                        print(decorator)
-                        raise SyntaxError('Line %d of %s seems incorrect' % (i+1, file.name))
-                    method_name, first_arg = match.groups()
-
-                    curr_method = {'$method_name': method_name, '$indent': indent}
-
-                    curr_method['$rename'] = 'self' if decorator != classmethod else 'cls'
-                    curr_method['$first_arg'] = first_arg
-
-                    print('In %s.%s rename %s to %s' %
-                          (curr_class['$class_name'], curr_method['$method_name'], curr_method['$first_arg'],
-                           curr_method['$rename']))
-
-                    i += 1
-                    continue
-            else:
-                # assuming that we are in method scope now
-                if indent <= curr_method['$indent']:
-                    curr_method.clear()
-                    decorator = None
-                    continue
-
-                else:
-                    pat = arg_pat(curr_method['$first_arg'])
-                    res = re.match(pat, line)
-                    print(res)
-                    i += 1
-                    continue
-
-        if not curr_class:
-            # check for class
-            if line.startswith('class'):
-                # extract class name
-                classname = re.search(classname_pat, line).group(1)
-                curr_class['$class_name'] = classname
-                curr_class['$indent'] = indent
-        i += 1
-
-    out.close()
 
 
 if __name__ == '__main__':
