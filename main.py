@@ -29,7 +29,7 @@ def extract_method(line, indent, classmethod_=None):
     return {'$method_name': method_name, '$first_arg': first_arg, '$indent': indent}
 
 
-def run2(file):
+def run(file):
     curr_class, curr_method, curr_decorator = (None,) * 3 # oh my god I am genius
 
     lines = file.readlines()
@@ -96,4 +96,4 @@ if __name__ == '__main__':
         sys.exit(1)
     print(files)
     file = open(files[0], 'r')
-    run2(file)
+    run(file)
