@@ -23,14 +23,14 @@ def extract_method(line, indent, classmethod_=None):
         print(method_pat)
         print(line)
         raise SyntaxError(line)
-    method_name, first_arg = match.groups()
+    method_name, curr_arg = match.groups()
     first_arg = 'self' if not classmethod_ else 'cls'
-    print("In %s rename first arg to %s" % (method_name, first_arg))
-    return {'$method_name': method_name, '$first_arg': first_arg, '$indent': indent}
+    print("In %s rename %s to %s" % (method_name, curr_arg, first_arg))
+    return {'$method_name': method_name, '$curr_arg': curr_arg, '$first_arg': first_arg, '$indent': indent}
 
 
 def run(file):
-    curr_class, curr_method, curr_decorator = (None,) * 3 # oh my god I am genius
+    curr_class, curr_method, curr_decorator = (None,) * 3  # oh my god I am genius
 
     lines = file.readlines()
     for line_ in lines:

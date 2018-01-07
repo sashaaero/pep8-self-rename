@@ -14,8 +14,7 @@ class SomeClass:
     def method(hola, arg1, arg2):  # case of self.self
         hola.hola = 'we dem boyz'
 
-
-    def method2(oops, self):  # case of self gives as another argument
+    def method2(oops, self): # case of self gives as another argument
         oops.self = 'lolwut'
         # return oops.self.lower()
 
