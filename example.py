@@ -5,6 +5,7 @@ class SomeClass:
         supra.arg2 = arg2  # comment section supra
         supra.arg3 = arg3
         supra.info = 'some line that contains supra'
+        supra.supra = 'privet {}'.format(supra.arg1)
 
     @staticmethod
     def hmm():
