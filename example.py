@@ -6,7 +6,7 @@ class SomeClass:
         supra.arg3 = arg3
         supra.info = 'some line that contains supra'
         supra.supra = 'privet {}'.format(supra.arg1)
-
+		supra.specs = 'Specifications'
     @staticmethod
     def hmm():
         pass
