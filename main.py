@@ -80,8 +80,8 @@ def run(file):
                         curr_decorator = classmethod
                     else:
                         curr_method = None
-                else: # seems we are in a method scope
-                    pass # not implemented
+                else:  # seems we are in a method scope
+                    pass  # not implemented
 
 
 if __name__ == '__main__':
